@@ -2,7 +2,7 @@
 # https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 
 # dependencies
-/node_modules
+*/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -11,7 +11,7 @@
 /coverage
 
 # next.js
-/.next/
+*/.next/
 /out/
 
 # production
