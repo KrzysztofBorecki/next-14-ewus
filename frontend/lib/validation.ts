@@ -1,3 +1,7 @@
+export function hasNoProhibitedCharacters(value: string, regExp: RegExp) {
+  return !regExp.test(value);
+}
+
 export function validatePeselControlDigit(pesel: string) {
   const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
   let stepOneAndTwoResult = 0;

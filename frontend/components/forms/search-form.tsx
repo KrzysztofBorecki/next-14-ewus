@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/spinner';
-import { SearchSechema } from '@/types/schemes';
+import { SearchSchema } from '@/types/schemes';
 import type { Dispatch, SetStateAction } from 'react';
 import type { TSearchResults } from '@/types/types';
 
@@ -28,7 +28,7 @@ export default function SearchForm({
   const [loading, setLoading] = useState(false);
   const { pending } = useFormStatus();
 
-  async function onSubmit(data: z.output<typeof SearchSechema>) {
+  async function onSubmit(data: z.output<typeof SearchSchema>) {
     setLoading(true);
 
     const responseData = await peselSearch(data);
@@ -43,8 +43,8 @@ export default function SearchForm({
     setLoading(false);
   }
 
-  const form = useForm<z.output<typeof SearchSechema>>({
-    resolver: zodResolver(SearchSechema),
+  const form = useForm<z.output<typeof SearchSchema>>({
+    resolver: zodResolver(SearchSchema),
   });
 
   return (

@@ -34,6 +34,13 @@ export default function SignInForm() {
 
   const form = useForm<z.output<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      domain: '',
+      loginEwus: '',
+      passwordEwus: '',
+      type: '',
+      idntSwd: '',
+    },
   });
 
   function shouldResetValues(value: string | null) {

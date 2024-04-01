@@ -1,56 +1,115 @@
 import { z } from 'zod';
-import { validatePeselControlDigit, validatePeselBirthDate } from '@/lib/pesel-validation';
+import {
+  hasNoProhibitedCharacters,
+  validatePeselControlDigit,
+  validatePeselBirthDate
+} from '@/lib/validation';
 
-export const IdAndTypeSignInSchema = z.object({
-  domain: z.enum(['01', '04', '05', '06', '08', '09', '11', '12']),
-  idntSwd: z.string({
-    required_error: 'Proszę podać identyfikator.'
-  }).trim().min(6, {
-    message: 'Identyfikator musi zawierać przynajmniej 6 znaków.',
+export const SignInSchema = (
+  z.object({
+    domain: z.string({
+      required_error: 'Proszę wybrać oddział NFZ.',
+    })
+      .trim()
+      .length(2, {
+        message: 'Proszę wybrać oddział NFZ.'
+      }),
+    loginEwus: z.string({
+      required_error: 'Proszę podać nazwę użytkownika.'
+    })
+      .trim()
+      .min(5, {
+        message: 'Nazwa użytkownika musi zawierać przynajmniej 6 znaków.',
+      })
+      .max(20, {
+        message: 'Nazwa użytkownika nie może zawierać więcej niż 20 znaków.',
+      }),
+    passwordEwus: z.string({
+      required_error: 'Proszę podać hasło.'
+    })
+      .trim()
+      .min(8, {
+        message: 'Hasło musi zawierać przynajmniej 8 znaków.',
+      })
+      .max(20, {
+        message: 'Hasło nie może zawierać więcej niż 20 znaków',
+      })
+      .regex(/[a-z]/, {
+        message: 'Hasło musi zawierać przynajmniej 1 małą literę [a-z].',
+      })
+      // .regex((/[A-Z]/), {
+      //   message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
+      // })
+      // .regex(/[0-9]/, {
+      //   message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
+      // })
+      .refine((value) => hasNoProhibitedCharacters(value, new RegExp(/[ą-żĄ-Ż\[\]+,:;=?|'<>.^()%]/)), {
+        message: 'Hasło nie może zawierać polskich znaków i znaków specjalnych innych niż !@-_#$&* .',
+      })
+    ,
+    idntSwd: z.string({
+      required_error: 'Proszę podać identyfikator.'
+    })
+      .trim()
+      .min(6, {
+        message: 'Identyfikator musi zawierać przynajmniej 6 znaków.',
+      }),
+    type: z.string({
+      required_error: 'Proszę wybrać typ operatora.'
+    })
+      .trim()
+      .min(1, {
+        message: 'Proszę wybrać typ operatora.',
+      }),
+  })
+).or(
+  z.object({
+    domain: z.string({
+      required_error: 'Proszę wybrać oddział NFZ.',
+    })
+      .trim()
+      .length(2, {
+        message: 'Proszę wybrać oddział NFZ.'
+      }),
+    loginEwus: z.string({
+      required_error: 'Proszę podać nazwę użytkownika.'
+    })
+      .trim()
+      .min(5, {
+        message: 'Nazwa użytkownika musi zawierać przynajmniej 6 znaków.',
+      })
+      .max(20, {
+        message: 'Nazwa użytkownika nie może zawierać więcej niż 20 znaków.',
+      }),
+    passwordEwus: z.string({
+      required_error: 'Proszę podać hasło.'
+    })
+      .trim()
+      .min(8, {
+        message: 'Hasło musi zawierać przynajmniej 8 znaków.',
+      })
+      .max(20, {
+        message: 'Hasło nie może zawierać więcej niż 20 znaków',
+      })
+      .regex(/[a-z]/, {
+        message: 'Hasło musi zawierać przynajmniej 1 małą literę [a-z].',
+      })
+      // .regex((/[A-Z]/), {
+      //   message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
+      // })
+      // .regex(/[0-9]/, {
+      //   message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
+      // })
+      .refine((value) => hasNoProhibitedCharacters(value, new RegExp(/[ą-żĄ-Ż\[\]+,:;=?|'<>.^()%]/)), {
+        message: 'Hasło nie może zawierać polskich znaków i znaków specjalnych innych niż !@-_#$&* .',
+      })
+    ,
+    idntSwd: z.string().optional(),
+    type: z.string().optional(),
   }),
-  type: z.string({
-    required_error: 'Proszę wybrać typ operatora.'
-  }).trim().min(1, {
-    message: 'Proszę wybrać typ operatora.',
-  }),
-  login_ewus: z.string({
-    required_error: 'Proszę podać nazwę użytkownika.'
-  }).trim().min(3, {
-    message: 'Nazwa użytkownika musi zawierać przynajmniej 3 znaki.',
-  }),
-  password_ewus: z.string({
-    required_error: 'Proszę podać hasło.'
-  }).trim().min(6, {
-    message: 'Hasło musi zawierać przynajmniej 6 znaków.',
-  }),
-});
+);
 
-export const NoIdAndTypeSignInSchema = z.object({
-  domain: z.enum(['02', '03', '07', '10', '13', '14', '15', '16']),
-  idntSwd: z.string().optional(),
-  type: z.string().optional(),
-  login_ewus: z.string({
-    required_error: 'Proszę podać nazwę użytkownika.'
-  }).trim().min(3, {
-    message: 'Nazwa użytkownika musi zawierać przynajmniej 3 znaki.',
-  }),
-  password_ewus: z.string({
-    required_error: 'Proszę podać hasło.'
-  }).trim().min(6, {
-    message: 'Hasło musi zawierać przynajmniej 6 znaków.',
-  }),
-});
-
-export const SignInSchema = z.discriminatedUnion('domain', [
-  IdAndTypeSignInSchema,
-  NoIdAndTypeSignInSchema,
-], {
-  errorMap: (_issue, _ctx) => {
-    return { message: 'Proszę wybrać oddział NFZ.' };
-  },
-});
-
-export const SearchSechema = z.object({
+export const SearchSchema = z.object({
   pesel: z.string({
     required_error: 'Proszę podać number PESEL.'
   }).length(11, {
