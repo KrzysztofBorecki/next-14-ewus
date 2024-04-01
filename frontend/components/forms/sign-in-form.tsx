@@ -26,6 +26,26 @@ import {
 import Spinner from '@/components/spinner';
 import { SignInSchema } from '@/types/schemes';
 
+function shouldResetValues(value: string | null) {
+  if (value) {
+    return ['02', '03', '07', '10', '13', '14', '15', '16'].includes(value);
+  } else {
+    return false;
+  }
+}
+
+function areIdAndTypeRequired(value: string | null) {
+  if (value) {
+    return ['01', '04', '05', '06', '08', '09', '11', '12'].includes(value);
+  } else {
+    return false;
+  }
+}
+
+function isDomainSelected(value: string | null) {
+  return !!value;
+}
+
 export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [domainValue, setDomainValue] = useState<string | null>(null);
@@ -34,34 +54,14 @@ export default function SignInForm() {
 
   const form = useForm<z.output<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      domain: '',
+      loginEwus: '',
+      passwordEwus: '',
+      type: '',
+      idntSwd: '',
+    },
   });
-
-  function shouldResetValues(value: string | null) {
-    if (value) {
-      return ['02', '03', '07', '10', '13', '14', '15', '16'].includes(value);
-    } else {
-      return false;
-    }
-  }
-
-  function areIdAndTypeRequired(value: string | null) {
-    if (value) {
-      return ['01', '04', '05', '06', '08', '09', '11', '12'].includes(value);
-    } else {
-      return false;
-    }
-  }
-
-  function isDomainSelected(value: string | null) {
-    return !!value;
-  }
-
-  useEffect(() => {
-    if (shouldResetValues(domainValue)) {
-      form.resetField('idntSwd');
-      form.resetField('type');
-    }
-  }, [domainValue, form]);
 
   async function onSubmit(data: z.output<typeof SignInSchema>) {
     setLoading(true);
@@ -74,6 +74,13 @@ export default function SignInForm() {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    if (shouldResetValues(domainValue)) {
+      form.resetField('idntSwd');
+      form.resetField('type');
+    }
+  }, [domainValue, form]);
 
   return (
     <Form {...form}>
@@ -178,7 +185,7 @@ export default function SignInForm() {
           <>
             <FormField
               control={form.control}
-              name="login_ewus"
+              name="loginEwus"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Login</FormLabel>
@@ -192,7 +199,7 @@ export default function SignInForm() {
 
             <FormField
               control={form.control}
-              name="password_ewus"
+              name="passwordEwus"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Hasło</FormLabel>
