@@ -3,7 +3,9 @@ import { useFormStatus } from 'react-dom';
 import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { peselSearch } from '@/lib/pesel-search';
+import { getSession, signOut } from '@/lib/auth';
+import { verifyInsuranceStatus } from '@/lib/verify-insurance-status';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,11 +15,30 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import Spinner from '@/components/spinner';
 import { SearchSchema } from '@/types/schemes';
 import type { Dispatch, SetStateAction } from 'react';
 import type { TSearchResults } from '@/types/types';
+
+function timeout(ms: number) {
+  return new Promise(res => {
+    setTimeout(() => res('ok'), ms);
+  });
+}
+
+async function signOutOnExpiredSessionMessage(
+  setMessage: Dispatch<SetStateAction<string | null>>,
+  message: string,
+  ms: number
+) {
+  let counter = Math.floor(ms / 1000);
+
+  for (let i = counter; i >= 0; i--) {
+    setMessage(`${message} ${counter}s.`);
+    await timeout(1000);
+    counter--;
+  }
+}
 
 export default function SearchForm({
   setSearchResults
@@ -29,13 +50,36 @@ export default function SearchForm({
   const { pending } = useFormStatus();
 
   async function onSubmit(data: z.output<typeof SearchSchema>) {
+    const session = await getSession();
+
+    if (!session) {
+      await signOutOnExpiredSessionMessage(
+        setMessage,
+        'Sesja wygasła! Powrót na stronę logowania za:',
+        5000
+      );
+
+      await signOut();
+
+      return;
+    }
+
+    if (!data) {
+      setMessage('Brak numeru PESEL');
+
+      return;
+    }
+
     setLoading(true);
 
-    const responseData = await peselSearch(data);
+    const responseData = await verifyInsuranceStatus({
+      pesel: data.pesel,
+      sessionId: session.userSessionEwus.sessionId,
+      tokenId: session.userSessionEwus.tokenId,
+    });
 
     if (!responseData.detail) {
-      setSearchResults(data);
-
+      setSearchResults(responseData);
     } else {
       setMessage('Nieudana próba weryfikacji wskazanego numeru PESEL.');
     }
@@ -45,6 +89,9 @@ export default function SearchForm({
 
   const form = useForm<z.output<typeof SearchSchema>>({
     resolver: zodResolver(SearchSchema),
+    defaultValues: {
+      pesel: '',
+    },
   });
 
   return (

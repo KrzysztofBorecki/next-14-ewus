@@ -8,7 +8,11 @@ export default function SearchResults({
   return (
     searchResults ? (
       <pre>
-        {JSON.stringify(searchResults, null, 2)}
+        <p>Dane Pacjenta</p>
+        <p>Pesel: {searchResults.body.patientPesel}</p>
+        <p>Imię: {searchResults.body.patientFirstName}</p>
+        <p>Nazwisko: {searchResults.body.patientLastName}</p>
+        <p>Status ubezpieczenia: {searchResults.body.insuranceStatus}</p>
       </pre>
     ) : 'Brak wyników'
   );

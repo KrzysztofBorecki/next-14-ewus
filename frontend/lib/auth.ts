@@ -9,13 +9,15 @@ import { SignInSchema } from '@/types/schemes';
 import type { TSession } from '@/types/types';
 import type { NextRequest } from 'next/server';
 
+const SESSION_TIME = 30 * 60 * 1000;
+
 function parseUser(user: z.output<typeof SignInSchema>) {
   return {
     domain: user?.domain || '',
     type: user?.type || '',
     idntSwd: user?.idntSwd || '',
-    login_ewus: user?.login_ewus || '',
-    password_ewus: user?.password_ewus || '',
+    login_ewus: user?.loginEwus || '',
+    password_ewus: user?.passwordEwus || '',
   };
 }
 
@@ -68,15 +70,22 @@ export async function signIn(formData: z.output<typeof SignInSchema>) {
 
   if (responseData?.session_id && responseData?.token_id) {
     const userSessionEwus = {
-      login_ewus: formData.login_ewus,
-      session_id: responseData.session_id,
-      token_id: responseData.token_id,
+      loginEwus: formData.loginEwus,
+      sessionId: responseData.session_id,
+      tokenId: responseData.token_id,
     };
 
-    const expires = new Date(Date.now() + 10 * 60 * 1000);
+    const expires = new Date(Date.now() + SESSION_TIME);
     const session = await encrypt({ userSessionEwus, expires });
 
-    cookies().set('session', session, { expires, httpOnly: true });
+    cookies().set({
+      name: 'session',
+      value: session,
+      expires,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    });
 
     redirect('/');
   } else {
@@ -89,7 +98,14 @@ export async function signIn(formData: z.output<typeof SignInSchema>) {
 }
 
 export async function signOut() {
-  cookies().set('session', '', { expires: new Date(0) });
+  cookies().set({
+    name: 'session',
+    value: '',
+    expires: new Date(0),
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+  });
 
   redirect('/login');
 }
@@ -105,17 +121,27 @@ export async function getSession(): Promise<TSession | null> {
 export async function updateSession(request: NextRequest) {
   const session = request.cookies.get('session')?.value;
 
+  if (!session && request.url.endsWith('/')) return NextResponse.redirect(new URL('/login', request.url));
+
   if (!session) return;
 
-  const parsed = await decrypt(session);
-  parsed.expires = new Date(Date.now() + 10 * 60 * 1000);
+  const parsedSession = await decrypt(session);
 
-  const response = NextResponse.next();
+  parsedSession.expires = new Date(Date.now() + SESSION_TIME);
+
+  const response = request.url.endsWith('/login') ? (
+    NextResponse.redirect(new URL('/', request.url))
+  ) : (
+    NextResponse.next()
+  );
+
   response.cookies.set({
     name: 'session',
-    value: await encrypt(parsed),
+    value: await encrypt(parsedSession),
+    expires: parsedSession.expires,
     httpOnly: true,
-    expires: parsed.expires,
+    secure: true,
+    sameSite: 'strict',
   });
 
   return response;
