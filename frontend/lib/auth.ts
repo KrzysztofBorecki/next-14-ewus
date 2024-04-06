@@ -9,21 +9,9 @@ import { SignInSchema } from '@/types/schemes';
 import type { TSession } from '@/types/types';
 import type { NextRequest } from 'next/server';
 
-const SESSION_TIME = 30 * 60 * 1000;
-
-function parseUser(user: z.output<typeof SignInSchema>) {
-  return {
-    domain: user?.domain || '',
-    type: user?.type || '',
-    idntSwd: user?.idntSwd || '',
-    login_ewus: user?.loginEwus || '',
-    password_ewus: user?.passwordEwus || '',
-  };
-}
+const SESSION_TIME_MS = 30 * 60 * 1000;
 
 async function authenticate(user: z.output<typeof SignInSchema>) {
-  const parsedUser = parseUser(user);
-
   try {
     const response = await fetch(
       `${process.env.SERVER_BASE_URL}/login/`,
@@ -32,7 +20,7 @@ async function authenticate(user: z.output<typeof SignInSchema>) {
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify(parsedUser),
+        body: JSON.stringify(user),
       }
     );
 
@@ -42,11 +30,17 @@ async function authenticate(user: z.output<typeof SignInSchema>) {
       return await response.json();
     } else {
       switch (response.status) {
-        case 400:
+        case 401:
+          throw new Error('401. Access Denied - Wrong Login or Password');
+
+        case 404:
           throw new Error('404. Not found');
 
+        case 422:
+          throw new Error('422. Validation Error');
+
         case 500:
-          throw new Error('500. internal server error');
+          throw new Error('500. EWUŚ Server Not Responding');
 
         default:
           throw new Error(`${response.status}`);
@@ -68,14 +62,14 @@ export async function signIn(formData: z.output<typeof SignInSchema>) {
 
   const responseData = await authenticate(formData);
 
-  if (responseData?.session_id && responseData?.token_id) {
+  if (responseData?.body.sessionId && responseData?.body.tokenId) {
     const userSessionEwus = {
       loginEwus: formData.loginEwus,
-      sessionId: responseData.session_id,
-      tokenId: responseData.token_id,
+      sessionId: responseData.body.sessionId,
+      tokenId: responseData.body.tokenId,
     };
 
-    const expires = new Date(Date.now() + SESSION_TIME);
+    const expires = new Date(Date.now() + SESSION_TIME_MS);
     const session = await encrypt({ userSessionEwus, expires });
 
     cookies().set({
@@ -127,7 +121,7 @@ export async function updateSession(request: NextRequest) {
 
   const parsedSession = await decrypt(session);
 
-  parsedSession.expires = new Date(Date.now() + SESSION_TIME);
+  parsedSession.expires = new Date(Date.now() + SESSION_TIME_MS);
 
   const response = request.url.endsWith('/login') ? (
     NextResponse.redirect(new URL('/', request.url))

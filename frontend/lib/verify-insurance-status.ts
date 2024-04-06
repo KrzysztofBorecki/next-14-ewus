@@ -27,11 +27,14 @@ export async function verifyInsuranceStatus({
       return await response.json();
     } else {
       switch (response.status) {
-        case 400:
+        case 404:
           throw new Error('404. Not found');
 
+        case 422:
+          throw new Error('422. Validation Error');
+
         case 500:
-          throw new Error('500. internal server error');
+          throw new Error('500. EWUŚ Server Not Responding');
 
         default:
           throw new Error(`${response.status}`);

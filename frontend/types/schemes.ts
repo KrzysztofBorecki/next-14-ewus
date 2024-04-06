@@ -7,13 +7,6 @@ import {
 
 export const SignInSchema = (
   z.object({
-    domain: z.string({
-      required_error: 'Proszę wybrać oddział NFZ.',
-    })
-      .trim()
-      .length(2, {
-        message: 'Proszę wybrać oddział NFZ.'
-      }),
     loginEwus: z.string({
       required_error: 'Proszę podać nazwę użytkownika.'
     })
@@ -37,17 +30,23 @@ export const SignInSchema = (
       .regex(/[a-z]/, {
         message: 'Hasło musi zawierać przynajmniej 1 małą literę [a-z].',
       })
-      // .regex((/[A-Z]/), {
-      //   message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
-      // })
-      // .regex(/[0-9]/, {
-      //   message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
-      // })
+      .regex((/[A-Z]/), {
+        message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
+      })
+      .regex(/[0-9]/, {
+        message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
+      })
       .refine((value) => hasNoProhibitedCharacters(value, new RegExp(/[ą-żĄ-Ż\[\]+,:;=?|'<>.^()%]/)), {
         message: 'Hasło nie może zawierać polskich znaków i znaków specjalnych innych niż !@-_#$&* .',
+      }),
+    domain: z
+      .string({
+        required_error: 'Proszę wybrać oddział NFZ.',
       })
-    ,
-    idntSwd: z.string({
+      .regex(/[0-1][0-6]/, {
+        message: 'Proszę wybrać oddział NFZ.'
+      }),
+    swdId: z.string({
       required_error: 'Proszę podać identyfikator.'
     })
       .trim()
@@ -64,13 +63,6 @@ export const SignInSchema = (
   })
 ).or(
   z.object({
-    domain: z.string({
-      required_error: 'Proszę wybrać oddział NFZ.',
-    })
-      .trim()
-      .length(2, {
-        message: 'Proszę wybrać oddział NFZ.'
-      }),
     loginEwus: z.string({
       required_error: 'Proszę podać nazwę użytkownika.'
     })
@@ -94,17 +86,23 @@ export const SignInSchema = (
       .regex(/[a-z]/, {
         message: 'Hasło musi zawierać przynajmniej 1 małą literę [a-z].',
       })
-      // .regex((/[A-Z]/), {
-      //   message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
-      // })
-      // .regex(/[0-9]/, {
-      //   message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
-      // })
+      .regex((/[A-Z]/), {
+        message: 'Hasło musi zawierać przynajmniej 1 wielką literę [A-Z].',
+      })
+      .regex(/[0-9]/, {
+        message: 'Hasło musi zawierać przynajmniej 1 cyfrę [0-9].',
+      })
       .refine((value) => hasNoProhibitedCharacters(value, new RegExp(/[ą-żĄ-Ż\[\]+,:;=?|'<>.^()%]/)), {
         message: 'Hasło nie może zawierać polskich znaków i znaków specjalnych innych niż !@-_#$&* .',
       })
     ,
-    idntSwd: z.string().optional(),
+    domain: z.string({
+      required_error: 'Proszę wybrać oddział NFZ.',
+    })
+      .regex(/02|03|07|10|13|14|15|16/, {
+        message: 'Proszę wybrać oddział NFZ.'
+      }),
+    swdId: z.string().optional(),
     type: z.string().optional(),
   }),
 );

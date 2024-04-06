@@ -1,5 +1,4 @@
 import { useForm } from 'react-hook-form';
-import { useFormStatus } from 'react-dom';
 import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,7 +46,6 @@ export default function SearchForm({
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { pending } = useFormStatus();
 
   async function onSubmit(data: z.output<typeof SearchSchema>) {
     const session = await getSession();
@@ -78,7 +76,7 @@ export default function SearchForm({
       tokenId: session.userSessionEwus.tokenId,
     });
 
-    if (!responseData.detail) {
+    if (responseData && !responseData.error) {
       setSearchResults(responseData);
     } else {
       setMessage('Nieudana próba weryfikacji wskazanego numeru PESEL.');
@@ -120,7 +118,7 @@ export default function SearchForm({
           )}
         />
 
-        <Button type="submit" variant="default" className="w-full" disabled={pending}>
+        <Button type="submit" variant="default" className="w-full" disabled={loading} aria-disabled={loading}>
           {loading ? (
             <div className="flex flex-row gap-3">
               Weryfikacja w toku...

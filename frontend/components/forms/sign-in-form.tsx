@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +49,6 @@ export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [domainValue, setDomainValue] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const { pending } = useFormStatus();
 
   const form = useForm<z.output<typeof SignInSchema>>({
     resolver: zodResolver(SignInSchema),
@@ -59,7 +57,7 @@ export default function SignInForm() {
       loginEwus: '',
       passwordEwus: '',
       type: '',
-      idntSwd: '',
+      swdId: '',
     },
   });
 
@@ -77,7 +75,7 @@ export default function SignInForm() {
 
   useEffect(() => {
     if (shouldResetValues(domainValue)) {
-      form.resetField('idntSwd');
+      form.resetField('swdId');
       form.resetField('type');
     }
   }, [domainValue, form]);
@@ -88,8 +86,8 @@ export default function SignInForm() {
         <>
           <code>
             <p>domain: 15</p>
-            <p>login_ewus: LEKARZ1</p>
-            <p>password_ewus: qwerty!@#</p>
+            <p>loginEwus: LEKARZ1</p>
+            <p>passwordEwus: qwertyU7</p>
           </code>
           <pre>
             {JSON.stringify(form.watch(), null, 2)}
@@ -142,7 +140,7 @@ export default function SignInForm() {
           <>
             <FormField
               control={form.control}
-              name="idntSwd"
+              name="swdId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Identyfikator</FormLabel>
@@ -213,7 +211,7 @@ export default function SignInForm() {
           </>
         )}
 
-        <Button type="submit" variant="default" className="w-full" disabled={pending} aria-disabled={pending}>
+        <Button type="submit" variant="default" className="w-full" disabled={loading} aria-disabled={loading}>
           {loading ? (
             <div className="flex flex-row gap-3">
               Logowanie...
