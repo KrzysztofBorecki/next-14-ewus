@@ -1,6 +1,6 @@
 'use server';
 
-import Spinner from '@/components/spinner';
+import Spinner from '@/components/ui/spinner';
 
 export default async function Loading() {
   return (

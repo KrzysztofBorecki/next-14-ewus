@@ -19,7 +19,7 @@ const SectionPrimaryHeading = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h1
     ref={ref}
-    className={cn('px-12 py-5 md:py-10 text-3xl md:text-6xl tracking-tighter font-bold', className)}
+    className={cn('px-8 py-4 md:py-6 text-2xl md:text-4xl tracking-tighter font-bold', className)}
     {...props}
   />
 ));
@@ -31,7 +31,7 @@ const SectionSecondaryHeading = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn('px-12 py-10 text-xl md:text-2xl font-bold', className)}
+    className={cn('px-8 py-4 text-lg md:text-xl font-bold', className)}
     {...props}
   />
 ));
@@ -44,7 +44,7 @@ const SectionContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex flex-col sm:flex-row justify-around gap-8',
+      'flex flex-col sm:flex-row items-center sm:items-start sm:justify-around gap-8',
       className
     )}
     {...props}
@@ -76,4 +76,11 @@ const SectionInfo = React.forwardRef<
 ));
 SectionInfo.displayName = 'SectionInfo';
 
-  export { SectionsContainer, SectionPrimaryHeading, SectionSecondaryHeading, SectionContent, SectionText, SectionInfo };
+export {
+  SectionsContainer,
+  SectionPrimaryHeading,
+  SectionSecondaryHeading,
+  SectionContent,
+  SectionText,
+  SectionInfo,
+};
