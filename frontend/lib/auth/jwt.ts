@@ -1,4 +1,7 @@
-import { jwtVerify, SignJWT } from 'jose';
+import {
+  jwtVerify,
+  SignJWT,
+} from 'jose';
 
 const KEY = new TextEncoder().encode(process.env.ENCRYPTION_KEY);
 
