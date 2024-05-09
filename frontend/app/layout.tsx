@@ -1,9 +1,10 @@
 import './globals.css';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import ThemeProvider from '@/components/theme-provider';
-import MainNav from '@/components/main-nav';
+import MainNav from '@/components/navigation/main-nav';
+import ThemeProvider from '@/components/themes/theme-provider';
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="pl-PL" suppressHydrationWarning>
@@ -43,6 +44,11 @@ export default function RootLayout({
           <main className="w-full flex-1 flex flex-col items-center">
             {children}
           </main>
+          <footer className="w-full h-20 flex items-center justify-center bg-gradient-to-br from-gradientStart from-0% to-gradientEnd to-95%">
+            <p className="text-xs text-muted-foreground tracking-wider">
+              2024 • Krzysztof Borecki & Daniel Biesiada
+            </p>
+          </footer>
         </ThemeProvider>
       </body>
     </html>

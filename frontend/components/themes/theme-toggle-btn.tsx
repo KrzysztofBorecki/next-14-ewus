@@ -10,9 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
+import {
+  MoonIcon,
+  SunIcon,
+} from '@radix-ui/react-icons';
 
-export function ThemeToggleBtn() {
+export default function ThemeToggleBtn() {
   const { setTheme } = useTheme();
 
   return (
@@ -25,18 +28,18 @@ export function ThemeToggleBtn() {
           <SunIcon className="size-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <MoonIcon
             className="absolute size-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">Przełącz motyw</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>
-          Light
+          Jasny
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
+          Ciemny
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
-          System
+          Systemowy
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

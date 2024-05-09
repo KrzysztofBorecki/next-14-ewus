@@ -1,11 +1,11 @@
 'use server';
 
-import Search from '@/components/search';
+import CheckCwu from '@/components/check_cwu/check-cwu';
 import {
   SectionPrimaryHeading,
   SectionsContainer,
   SectionSecondaryHeading,
-} from '@/components/section';
+} from '@/components/ui/section';
 
 export default async function Home() {
   return (
@@ -14,9 +14,9 @@ export default async function Home() {
         Weryfikacja statusu ubezpieczenia zdrowotnego pacjenta
       </SectionPrimaryHeading>
       <SectionSecondaryHeading className="max-w-[48ch]">
-        Podaj numer PESEL pacjenta
+        Podaj numer PESEL pacjenta lub prześlij plik CSV
       </SectionSecondaryHeading>
-      <Search />
+      <CheckCwu />
     </SectionsContainer>
   );
 }

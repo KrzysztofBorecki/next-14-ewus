@@ -1,29 +1,32 @@
 'use client';
 
-import { ThemeToggleBtn } from '@/components/theme-toggle-btn';
-import SignOutBtn from '@/components/sign-out-btn';
-import type { TSession } from '@/types/types';
+import SignOutBtn from '@/components/navigation/sign-out-btn';
+import ThemeToggleBtn from '@/components/themes/theme-toggle-btn';
 
 export default function MainNavMenu({
-  session
+  isSignedIn
 }: {
-  session: TSession | null
+  isSignedIn: boolean
 }) {
   return (
     <ul className="flex flex-row items-center gap-4">
       <li>
-        {session ? (
-          <div className="flex items-center gap-4 font-medium text-foreground/60">
-            <div className="flex flex-row items-center gap-2 text-sm">
-              Status: Zalogowano
+        {isSignedIn ? (
+          <div className="flex items-center gap-4">
+            <div className="flex flex-row items-center gap-2">
+              <p className="font-medium text-foreground/60 text-sm">
+                Status: Zalogowano
+              </p>
               <div className="aspect-square size-3 bg-statusGreen border rounded-full border-input shadow-sm"></div>
             </div>
             <SignOutBtn />
           </div>
         ) : (
-          <div className="flex items-center gap-4 font-medium text-foreground/60">
+          <div className="flex items-center gap-4">
             <div className="flex flex-row items-center gap-2 text-sm">
-              Status: Niezalogowano
+              <p className="font-medium text-foreground/60 text-sm">
+                Status: Niezalogowano
+              </p>
               <div className="aspect-square size-3 bg-statusRed border rounded-full border-input shadow-sm"></div>
             </div>
           </div>

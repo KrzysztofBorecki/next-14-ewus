@@ -1,16 +1,19 @@
-'use server'
+'use server';
 
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { SectionsContainer, SectionSecondaryHeading } from '@/components/section';
 import { buttonVariants } from '@/components/ui/button';
-import { Frown as AlertIcon } from 'lucide-react';
+import {
+  SectionsContainer,
+  SectionSecondaryHeading,
+} from '@/components/ui/section';
+import { Frown } from 'lucide-react';
 
 export default async function NotFound() {
   return (
     <SectionsContainer>
       <section className="flex-1 flex flex-col w-full items-center justify-center text-foreground">
-        <AlertIcon className="size-16" />
+        <Frown className="size-16" />
         <SectionSecondaryHeading>
           404 - Strona o podanym adresie nie istnieje.
         </SectionSecondaryHeading>

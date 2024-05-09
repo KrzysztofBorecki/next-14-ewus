@@ -1,3 +1,7 @@
+export type TFormState = {
+  message: string;
+};
+
 export type TSession = {
   userSessionEwus: {
     loginEwus: string;
@@ -8,5 +12,3 @@ export type TSession = {
   iat: number;
   exp: number;
 };
-
-export type TSearchResults = Record<string, Record<string, string>>;
