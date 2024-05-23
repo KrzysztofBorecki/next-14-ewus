@@ -80,7 +80,7 @@ const TEST_DATA = {
     responseErrorStatus: '422'
   },
   postSignInOutput500Expected: {
-    responseErrorMessage: 'Błąd 500: Serwer EWUŚ nie odpowiada',
+    responseErrorMessage: 'Błąd 500: Serwer eWUŚ nie odpowiada',
     responseErrorStatus: '500'
   },
   postSignInOutput599Expected: {
@@ -89,11 +89,15 @@ const TEST_DATA = {
   },
   postSignInOutputWithFetchErrorWithMessageExpected: {
     responseErrorMessage: 'fetch error',
-    responseErrorStatus: 'undefined'
+    responseErrorStatus: 'Brak'
   },
   postSignInOutputWithFetchErrorWithoutMessageExpected: {
     responseErrorMessage: '',
-    responseErrorStatus: 'undefined'
+    responseErrorStatus: 'Brak'
+  },
+  postSignInOutputWithFetchUnknownErrorExpected: {
+    responseErrorMessage: 'Nieznany błąd',
+    responseErrorStatus: 'Brak'
   },
   fetchResponseBody200: {
     'error': false,
@@ -188,6 +192,9 @@ const TEST_DATA = {
   getFetchErrorWithoutMessage: () => {
     throw new Error();
   },
+  getFetchUnknownError: () => {
+    throw 'error';
+  },
 };
 
 describe('postSignIn()', () => {
@@ -281,5 +288,15 @@ describe('postSignIn()', () => {
     const result = await postSignIn(TEST_DATA.postSignInInput200);
 
     expect(result).toEqual(TEST_DATA.postSignInOutputWithFetchErrorWithoutMessageExpected);
+  });
+
+  it('for fetch unknown error that is not instanceof Error returns expected data', async () => {
+    global.fetch = jest.fn(() => {
+      TEST_DATA.getFetchUnknownError();
+    }) as jest.Mock;
+
+    const result = await postSignIn(TEST_DATA.postSignInInput200);
+
+    expect(result).toEqual(TEST_DATA.postSignInOutputWithFetchUnknownErrorExpected);
   });
 });

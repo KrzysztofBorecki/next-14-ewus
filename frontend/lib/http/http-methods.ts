@@ -39,23 +39,7 @@ const post = async (
   });
 };
 
-function checkGetError(status: number) {
-  switch (status) {
-    case 401:
-      throw new Error('Błąd 401: Brak dostępu - błędny login lub hasło', { cause: status });
-
-    case 422:
-      throw new Error('Błąd 422: Błąd walidacji', { cause: status });
-
-    case 500:
-      throw new Error('Błąd 500:  Serwer eWUŚ nie odpowiada', { cause: status });
-
-    default:
-      throw new Error(`Nieznany błąd ${status}`, { cause: status });
-  }
-}
-
-function checkPostError(status: number) {
+function checkError(status: number) {
   switch (status) {
     case 401:
       throw new Error('Błąd 401: Brak dostępu - błędny login lub hasło', { cause: status });
@@ -67,7 +51,7 @@ function checkPostError(status: number) {
       throw new Error('Błąd 422: Błąd walidacji', { cause: status });
 
     case 500:
-      throw new Error('Błąd 500: Serwer EWUŚ nie odpowiada', { cause: status });
+      throw new Error('Błąd 500: Serwer eWUŚ nie odpowiada', { cause: status });
 
     default:
       throw new Error(`Nieznany błąd ${status}`, { cause: status });
@@ -84,13 +68,12 @@ const createHttpMethod: TCreateHttpMethod = (options) => {
       if (response.ok) {
         return await response.json();
       } else {
-        if (options.method === 'GET') checkGetError(response.status);
-        if (options.method === 'POST') checkPostError(response.status);
+        checkError(response.status);
       }
     } catch (error) {
       return {
-        responseErrorStatus: error instanceof Error && String(error.cause),
-        responseErrorMessage: error instanceof Error ? error.message : String(error),
+        responseErrorStatus: error instanceof Error && error.hasOwnProperty('cause') ? String(error.cause) : 'Brak',
+        responseErrorMessage: error instanceof Error ? error.message : 'Nieznany błąd',
       };
     }
   };
