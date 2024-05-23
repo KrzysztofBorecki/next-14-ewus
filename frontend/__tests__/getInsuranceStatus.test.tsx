@@ -97,11 +97,15 @@ const TEST_DATA = {
   },
   getInsuranceStatusOutputWithFetchErrorWithMessageExpected: {
     responseErrorMessage: 'fetch error',
-    responseErrorStatus: 'undefined'
+    responseErrorStatus: 'Brak'
   },
   getInsuranceStatusOutputWithFetchErrorWithoutMessageExpected: {
     responseErrorMessage: '',
-    responseErrorStatus: 'undefined'
+    responseErrorStatus: 'Brak'
+  },
+  getInsuranceStatusOutputWithFetchUnknownErrorExpected: {
+    responseErrorMessage: 'Nieznany błąd',
+    responseErrorStatus: 'Brak'
   },
   fetchResponseBody200: {
     'id': '1',
@@ -209,6 +213,9 @@ const TEST_DATA = {
   getFetchErrorWithoutMessage: () => {
     throw new Error();
   },
+  getFetchUnknownError: () => {
+    throw 'error';
+  },
 };
 
 describe('getInsuranceStatus()', () => {
@@ -302,5 +309,15 @@ describe('getInsuranceStatus()', () => {
     const result = await getInsuranceStatus(TEST_DATA.getInsuranceStatusInput200);
 
     expect(result).toEqual(TEST_DATA.getInsuranceStatusOutputWithFetchErrorWithoutMessageExpected);
+  });
+
+  it('for fetch unknown error that is not instanceof Error returns expected data', async () => {
+    global.fetch = jest.fn(() => {
+      TEST_DATA.getFetchUnknownError();
+    }) as jest.Mock;
+
+    const result = await getInsuranceStatus(TEST_DATA.getInsuranceStatusInput200);
+
+    expect(result).toEqual(TEST_DATA.getInsuranceStatusOutputWithFetchUnknownErrorExpected);
   });
 });
