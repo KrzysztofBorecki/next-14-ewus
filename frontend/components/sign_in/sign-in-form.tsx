@@ -92,11 +92,6 @@ export default function SignInForm() {
         className="w-full sm:max-w-md space-y-6"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <code>
-          <p>domain: 15</p>
-          <p>loginEwus: TestEwus</p>
-          <p>passwordEwus: QwertY12#</p>
-        </code>
         <FormField
           control={form.control}
           name="domain"

@@ -7,13 +7,13 @@ function parseResults(resultsList: TResults[]): TParsedResults[] {
   return resultsList.map((results) => {
     return (results.error) ? ({
       error: `Błąd - ${String(results.message)}`,
-      patientFullName: '✖',
+      patientFullName: '✕',
       patientPesel: String(results.id),
-      insuranceStatus: '✖',
-      prescriptionSymbol: '✖',
-      vaccineCovid: '✖',
-      ukr: '✖',
-      xml: '✖',
+      insuranceStatus: '✕',
+      prescriptionSymbol: '✕',
+      vaccineCovid: '✕',
+      ukr: '✕',
+      xml: '✕',
     }) : ({
       error: '—',
       patientFullName: `${results.body.patientLastName} ${results.body.patientFirstName}`,
